@@ -16,7 +16,7 @@ const BookSearch = () => {
     setError(null)
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/books/search/${query}`)
+      const response = await axios.get(`https://digital-library-system-backend.onrender.com/api/books/search/${query}`)
       setSearchResults(response.data)
       setLoading(false)
     } catch (err) {

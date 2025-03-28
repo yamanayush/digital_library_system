@@ -1,36 +1,13 @@
-// import React from 'react'
-// import BookList from './components/BookList'
-// import BookForm from './components/BookForm'
-// import BookSearch from './components/BookSearch'
-// import BookUpdateForm from './components/BookUpdateForm'
-
-// function App() {
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <h1 className="text-3xl font-bold mb-6 text-center">Library Management System</h1>
-//       <div className="grid md:grid-cols-2 gap-6">
-//         <div>
-//           <BookForm />
-//           <BookSearch />
-//         </div>
-//         <BookList />
-//       </div>
-//       <BookUpdateForm />
-//     </div>
-//   )
-// }
-
-// export default App
-
 import React, { useState } from 'react'
 import BookList from './components/BookList'
 import BookForm from './components/BookForm'
 import BookSearch from './components/BookSearch'
 import BookUpdateForm from './components/BookUpdateForm'
-import { BookIcon, PlusCircleIcon, SearchIcon, EditIcon } from 'lucide-react'
+import { BookIcon, PlusCircleIcon, SearchIcon, EditIcon, Menu, X } from 'lucide-react'
 
 function App() {
   const [activeTab, setActiveTab] = useState('list')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const renderContent = () => {
     switch(activeTab) {
@@ -63,6 +40,16 @@ function App() {
                 Digital Library
               </h1>
             </div>
+            
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            {/* Desktop navigation */}
             <div className="hidden md:flex space-x-1">
               {navItems.map(({ id, label, icon: Icon }) => (
                 <button
@@ -80,11 +67,33 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Mobile navigation */}
+        <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {navItems.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => {
+                  setActiveTab(id)
+                  setIsMobileMenuOpen(false)
+                }}
+                className={`w-full px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-2
+                  ${activeTab === id 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </nav>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
             {renderContent()}
           </div>
         </div>

@@ -11,7 +11,7 @@ const BookList = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/books')
+        const response = await axios.get('https://digital-library-system-backend.onrender.com/api/books')
         setBooks(response.data)
         setLoading(false)
       } catch (err) {
@@ -25,7 +25,7 @@ const BookList = () => {
 
   const handleDelete = async (bookId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/books/${bookId}`)
+      await axios.delete(`https://digital-library-system-backend.onrender.com/api/books/${bookId}`)
       setBooks(books.filter(book => book.bookId !== bookId))
     } catch (err) {
       alert('Error deleting book: ' + err.response.data.message)
