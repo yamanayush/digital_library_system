@@ -14,7 +14,7 @@ const app = express();
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['https://digital-library-system.vercel.app']
+    : ['https://digital-library-system.vercel.app','http://localhost:3000']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
