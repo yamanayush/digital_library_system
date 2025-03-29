@@ -79,6 +79,10 @@ const BookUpdateForm = () => {
       ...prevState,
       [name]: value
     }))
+    // Clear success message when user starts editing
+    if (submitStatus?.type === 'success') {
+      setSubmitStatus(null)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -115,23 +119,18 @@ const BookUpdateForm = () => {
       
       console.log('Update response:', response.data)
       
+      // Update the form data with the response
+      setUpdateData({
+        title: response.data.title,
+        author: response.data.author,
+        genre: response.data.genre || '',
+        availabilityStatus: response.data.availabilityStatus
+      })
+      
       setSubmitStatus({
         type: 'success',
         message: 'Book updated successfully!'
       })
-
-      // Clear form after 3 seconds on successful update
-      setTimeout(() => {
-        setSearchQuery('')
-        setFoundBookId('')
-        setUpdateData({
-          title: '',
-          author: '',
-          genre: '',
-          availabilityStatus: 'Available'
-        })
-        setSubmitStatus(null)
-      }, 3000)
     } catch (error) {
       console.error('Update error:', error)
       setSubmitStatus({
@@ -143,6 +142,18 @@ const BookUpdateForm = () => {
     }
   }
 
+  const handleNewSearch = () => {
+    setSearchQuery('')
+    setFoundBookId('')
+    setUpdateData({
+      title: '',
+      author: '',
+      genre: '',
+      availabilityStatus: 'Available'
+    })
+    setSubmitStatus(null)
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -152,14 +163,24 @@ const BookUpdateForm = () => {
 
       {submitStatus && (
         <div 
-          className={`p-4 rounded-lg flex items-center space-x-3 ${
+          className={`p-4 rounded-lg flex items-center justify-between ${
             submitStatus.type === 'success' 
               ? 'bg-green-100 text-green-800' 
               : 'bg-red-100 text-red-800'
           }`}
         >
-          {submitStatus.type === 'success' ? <CheckCircleIcon /> : <XCircleIcon />}
-          <span>{submitStatus.message}</span>
+          <div className="flex items-center space-x-3">
+            {submitStatus.type === 'success' ? <CheckCircleIcon /> : <XCircleIcon />}
+            <span>{submitStatus.message}</span>
+          </div>
+          {submitStatus.type === 'success' && (
+            <button
+              onClick={handleNewSearch}
+              className="text-sm font-medium hover:text-green-900"
+            >
+              Search Another Book
+            </button>
+          )}
         </div>
       )}
 
