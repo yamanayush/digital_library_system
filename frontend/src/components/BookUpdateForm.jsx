@@ -88,7 +88,7 @@ const BookUpdateForm = () => {
 
     try {
       console.log('Updating book:', { bookId, updateData })
-      const response = await axios.put(`https://digital-library-system-backend.onrender.com/api/books/${bookId}`, updateData)
+      const response = await axios.put(`https://digital-library-system-backend.onrender.com/api/books/${encodeURIComponent(bookId)}`, updateData)
       console.log('Update response:', response.data)
       
       setSubmitStatus({

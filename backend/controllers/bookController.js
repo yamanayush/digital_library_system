@@ -104,6 +104,8 @@ exports.updateBook = async (req, res) => {
 
     // First check if the book exists
     const existingBook = await Book.findOne({ bookId });
+    console.log('Existing book check result:', existingBook);
+
     if (!existingBook) {
       console.log('Book not found:', bookId);
       return res.status(404).json({ message: 'Book not found' });
@@ -113,7 +115,6 @@ exports.updateBook = async (req, res) => {
 
     // Prepare update data with all fields
     const updateData = {
-      bookId: updates.bookId || existingBook.bookId, // Allow bookId update if provided
       title: updates.title,
       author: updates.author,
       genre: updates.genre || existingBook.genre,
