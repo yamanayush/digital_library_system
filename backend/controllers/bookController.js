@@ -91,56 +91,36 @@ exports.updateBook = async (req, res) => {
     const { bookId } = req.params;
     const updates = req.body;
 
-    console.log('Update request received:', {
-      bookId,
-      updates
-    });
+    console.log('Update request received for bookId:', bookId);
+    console.log('Update data:', updates);
 
     // Validate required fields
     if (!updates.title || !updates.author) {
-      console.log('Validation failed: Missing title or author');
       return res.status(400).json({ message: 'Title and author are required' });
     }
 
-    // First check if the book exists
-    const existingBook = await Book.findOne({ bookId });
-    console.log('Existing book check result:', existingBook);
-
-    if (!existingBook) {
-      console.log('Book not found:', bookId);
-      return res.status(404).json({ message: 'Book not found' });
-    }
-
-    console.log('Existing book found:', existingBook);
-
-    // Update the book
+    // Find and update the book
     const updatedBook = await Book.findOneAndUpdate(
-      { bookId },
+      { bookId: bookId },
       {
-        $set: {
-          title: updates.title,
-          author: updates.author,
-          genre: updates.genre || existingBook.genre,
-          availabilityStatus: updates.availabilityStatus || existingBook.availabilityStatus
-        }
+        title: updates.title,
+        author: updates.author,
+        genre: updates.genre,
+        availabilityStatus: updates.availabilityStatus
       },
       { new: true }
     );
 
     if (!updatedBook) {
-      console.log('Update failed - book not found after update attempt');
-      return res.status(404).json({ message: 'Book not found after update attempt' });
+      return res.status(404).json({ message: 'Book not found' });
     }
 
     console.log('Book updated successfully:', updatedBook);
     res.status(200).json(updatedBook);
   } catch (error) {
-    console.error('Error updating book:', {
-      message: error.message,
-      stack: error.stack
-    });
-    res.status(400).json({ 
-      message: error.message || 'Failed to update book',
+    console.error('Error updating book:', error);
+    res.status(500).json({ 
+      message: 'Failed to update book',
       error: process.env.NODE_ENV === 'development' ? error : {}
     });
   }
