@@ -20,7 +20,7 @@ const app = express();
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['https://digital-library-system.vercel.app','http://localhost:3000','https://digital-library-system.vercel.app'],
+    : ['https://digital-library-system.vercel.app','http://localhost:3000'],
   credentials: true,
 }));
 app.use(express.json());
@@ -40,15 +40,14 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || "production"} mode on port ${PORT}`);
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error(`Unhandled Rejection: ${err.message}`);
-  // Close server & exit process
-  server.close(() => process.exit(1));
+  process.exit(1);
 });
 
 module.exports = app;
