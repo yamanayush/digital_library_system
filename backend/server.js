@@ -14,7 +14,7 @@ require('dotenv').config();
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['https://digital-library-system.vercel.app','http://localhost:5176','https://digital-library-system-backend.onrender.com/'],
+    : ['https://digital-library-system.vercel.app','http://localhost:5173','https://digital-library-system-backend.onrender.com/'],
   credentials: true,
 }));
  app.use(express.json());
