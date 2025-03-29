@@ -20,7 +20,7 @@ const app = express();
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['https://digital-library-system.vercel.app','http://localhost:3000'],
+    : ['https://digital-library-system.vercel.app','http://localhost:3000','https://digital-library-system.vercel.app'],
   credentials: true,
 }));
 app.use(express.json());
