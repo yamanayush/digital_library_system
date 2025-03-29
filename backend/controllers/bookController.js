@@ -102,8 +102,8 @@ exports.updateBook = async (req, res) => {
       return res.status(400).json({ message: 'Title and author are required' });
     }
 
-    // First check if the book exists
-    const existingBook = await Book.findOne({ bookId: bookId.trim() });
+    // First check if the book exists - use exact match
+    const existingBook = await Book.findOne({ bookId: bookId });
     console.log('Existing book check result:', existingBook);
 
     if (!existingBook) {
@@ -115,19 +115,19 @@ exports.updateBook = async (req, res) => {
 
     // Prepare update data with all fields
     const updateData = {
-      title: updates.title.trim(),
-      author: updates.author.trim(),
-      genre: updates.genre ? updates.genre.trim() : existingBook.genre,
-      availabilityStatus: updates.availabilityStatus || existingBook.availabilityStatus
+      title: updates.title,
+      author: updates.author,
+      genre: updates.genre || existingBook.genre,
+      availabilityStatus: updates.availabilityStatus
     };
 
     console.log('Updating book with data:', updateData);
 
-    // Update the book
+    // Update the book using the exact bookId
     const updatedBook = await Book.findOneAndUpdate(
-      { bookId: bookId.trim() },
-      updateData,
-      { new: true, runValidators: true }
+      { bookId: bookId },
+      { $set: updateData },
+      { new: true }
     );
 
     if (!updatedBook) {
