@@ -118,16 +118,16 @@ exports.updateBook = async (req, res) => {
       title: updates.title,
       author: updates.author,
       genre: updates.genre || existingBook.genre,
-      availabilityStatus: updates.availabilityStatus
+      availabilityStatus: updates.availabilityStatus || existingBook.availabilityStatus
     };
 
     console.log('Updating book with data:', updateData);
 
-    // Update the book using the exact bookId
+    // Update the book using findOneAndUpdate with the exact bookId match
     const updatedBook = await Book.findOneAndUpdate(
       { bookId: bookId },
-      { $set: updateData },
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     );
 
     if (!updatedBook) {
