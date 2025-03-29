@@ -5,7 +5,8 @@ import { SearchIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react'
 const API_BASE_URL = 'https://digital-library-system-backend.onrender.com'
 
 const BookUpdateForm = () => {
-  const [bookId, setBookId] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [foundBookId, setFoundBookId] = useState('')
   const [updateData, setUpdateData] = useState({
     title: '',
     author: '',
@@ -17,14 +18,14 @@ const BookUpdateForm = () => {
 
   const handleSearch = async (e) => {
     e?.preventDefault()
-    if (!bookId.trim()) return
+    if (!searchQuery.trim()) return
 
     setLoading(true)
     setSubmitStatus(null)
 
     try {
-      console.log('Searching for book:', bookId)
-      const searchUrl = `${API_BASE_URL}/api/books/search/${encodeURIComponent(bookId.trim())}`
+      console.log('Searching for book:', searchQuery)
+      const searchUrl = `${API_BASE_URL}/api/books/search/${encodeURIComponent(searchQuery.trim())}`
       console.log('Search URL:', searchUrl)
       const response = await axios.get(searchUrl)
       console.log('Search response:', response.data)
@@ -32,6 +33,7 @@ const BookUpdateForm = () => {
       if (response.data && response.data.length > 0) {
         const book = response.data[0]
         console.log('Found book:', book)
+        setFoundBookId(book.bookId)
         setUpdateData({
           title: book.title || '',
           author: book.author || '',
@@ -45,6 +47,7 @@ const BookUpdateForm = () => {
           type: 'error',
           message: 'Book not found'
         })
+        setFoundBookId('')
         setUpdateData({
           title: '',
           author: '',
@@ -58,6 +61,7 @@ const BookUpdateForm = () => {
         type: 'error',
         message: error.response?.data?.message || 'Error searching for book'
       })
+      setFoundBookId('')
       setUpdateData({
         title: '',
         author: '',
@@ -79,7 +83,7 @@ const BookUpdateForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!bookId.trim() || !updateData.title || !updateData.author) {
+    if (!foundBookId || !updateData.title || !updateData.author) {
       setSubmitStatus({
         type: 'error',
         message: 'Book ID, title and author are required'
@@ -91,7 +95,7 @@ const BookUpdateForm = () => {
     setSubmitStatus(null)
 
     try {
-      const updateUrl = `${API_BASE_URL}/api/books/${encodeURIComponent(bookId.trim())}`
+      const updateUrl = `${API_BASE_URL}/api/books/${encodeURIComponent(foundBookId)}`
       console.log('Update URL:', updateUrl)
       console.log('Update data:', updateData)
 
@@ -118,7 +122,8 @@ const BookUpdateForm = () => {
 
       // Clear form after 3 seconds on successful update
       setTimeout(() => {
-        setBookId('')
+        setSearchQuery('')
+        setFoundBookId('')
         setUpdateData({
           title: '',
           author: '',
@@ -162,9 +167,9 @@ const BookUpdateForm = () => {
         <div className="relative flex-1">
           <input 
             type="text" 
-            value={bookId}
-            onChange={(e) => setBookId(e.target.value)}
-            placeholder="Enter Book ID to update"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Enter Book ID or Title to search"
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md sm:rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <SearchIcon 
