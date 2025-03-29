@@ -99,20 +99,32 @@ exports.updateBook = async (req, res) => {
       return res.status(400).json({ message: 'Title and author are required' });
     }
 
-    // Find and update the book
+    // First check if the book exists
+    const existingBook = await Book.findOne({ bookId });
+    console.log('Existing book:', existingBook);
+
+    if (!existingBook) {
+      console.log('Book not found with ID:', bookId);
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    // Update the book with new data
     const updatedBook = await Book.findOneAndUpdate(
-      { bookId: bookId },
+      { bookId },
       {
-        title: updates.title,
-        author: updates.author,
-        genre: updates.genre,
-        availabilityStatus: updates.availabilityStatus
+        $set: {
+          title: updates.title,
+          author: updates.author,
+          genre: updates.genre || existingBook.genre,
+          availabilityStatus: updates.availabilityStatus || existingBook.availabilityStatus
+        }
       },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!updatedBook) {
-      return res.status(404).json({ message: 'Book not found' });
+      console.log('Update failed for book:', bookId);
+      return res.status(404).json({ message: 'Failed to update book' });
     }
 
     console.log('Book updated successfully:', updatedBook);
@@ -121,7 +133,7 @@ exports.updateBook = async (req, res) => {
     console.error('Error updating book:', error);
     res.status(500).json({ 
       message: 'Failed to update book',
-      error: process.env.NODE_ENV === 'development' ? error : {}
+      error: process.env.NODE_ENV === 'development' ? error.message : {}
     });
   }
 };

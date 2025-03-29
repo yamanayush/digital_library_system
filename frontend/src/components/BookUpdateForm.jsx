@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { SearchIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react'
 
+const API_BASE_URL = 'https://digital-library-system-backend.onrender.com'
+
 const BookUpdateForm = () => {
   const [bookId, setBookId] = useState('')
   const [updateData, setUpdateData] = useState({
@@ -22,7 +24,9 @@ const BookUpdateForm = () => {
 
     try {
       console.log('Searching for book:', bookId)
-      const response = await axios.get(`https://digital-library-system-backend.onrender.com/api/books/search/${encodeURIComponent(bookId.trim())}`)
+      const searchUrl = `${API_BASE_URL}/api/books/search/${encodeURIComponent(bookId.trim())}`
+      console.log('Search URL:', searchUrl)
+      const response = await axios.get(searchUrl)
       console.log('Search response:', response.data)
       
       if (response.data && response.data.length > 0) {
@@ -87,15 +91,24 @@ const BookUpdateForm = () => {
     setSubmitStatus(null)
 
     try {
-      console.log('Updating book:', { bookId: bookId.trim(), updateData })
+      const updateUrl = `${API_BASE_URL}/api/books/${encodeURIComponent(bookId.trim())}`
+      console.log('Update URL:', updateUrl)
+      console.log('Update data:', updateData)
+
       const response = await axios({
-        method: 'put',
-        url: `https://digital-library-system-backend.onrender.com/api/books/${encodeURIComponent(bookId.trim())}`,
-        data: updateData,
+        method: 'PUT',
+        url: updateUrl,
+        data: {
+          title: updateData.title.trim(),
+          author: updateData.author.trim(),
+          genre: updateData.genre.trim(),
+          availabilityStatus: updateData.availabilityStatus
+        },
         headers: {
           'Content-Type': 'application/json'
         }
       })
+      
       console.log('Update response:', response.data)
       
       setSubmitStatus({
