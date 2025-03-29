@@ -22,7 +22,8 @@ const BookUpdateForm = () => {
 
     try {
       console.log('Searching for book:', bookId)
-      const response = await axios.get(`https://digital-library-system-backend.onrender.com/api/books/search/${encodeURIComponent(bookId)}`)
+      // First try exact search
+      const response = await axios.get(`https://digital-library-system-backend.onrender.com/api/books/search/${encodeURIComponent(bookId.trim())}`)
       console.log('Search response:', response.data)
       
       if (response.data && response.data.length > 0) {
@@ -87,8 +88,11 @@ const BookUpdateForm = () => {
     setSubmitStatus(null)
 
     try {
-      console.log('Updating book:', { bookId, updateData })
-      const response = await axios.put(`https://digital-library-system-backend.onrender.com/api/books/${encodeURIComponent(bookId)}`, updateData)
+      console.log('Updating book:', { bookId: bookId.trim(), updateData })
+      const response = await axios.put(`https://digital-library-system-backend.onrender.com/api/books/${encodeURIComponent(bookId.trim())}`, {
+        ...updateData,
+        bookId: bookId.trim() // Include bookId in update data
+      })
       console.log('Update response:', response.data)
       
       setSubmitStatus({

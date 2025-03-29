@@ -103,7 +103,7 @@ exports.updateBook = async (req, res) => {
     }
 
     // First check if the book exists
-    const existingBook = await Book.findOne({ bookId });
+    const existingBook = await Book.findOne({ bookId: bookId.trim() });
     console.log('Existing book check result:', existingBook);
 
     if (!existingBook) {
@@ -115,9 +115,9 @@ exports.updateBook = async (req, res) => {
 
     // Prepare update data with all fields
     const updateData = {
-      title: updates.title,
-      author: updates.author,
-      genre: updates.genre || existingBook.genre,
+      title: updates.title.trim(),
+      author: updates.author.trim(),
+      genre: updates.genre ? updates.genre.trim() : existingBook.genre,
       availabilityStatus: updates.availabilityStatus || existingBook.availabilityStatus
     };
 
@@ -125,8 +125,8 @@ exports.updateBook = async (req, res) => {
 
     // Update the book
     const updatedBook = await Book.findOneAndUpdate(
-      { bookId },
-      { $set: updateData },
+      { bookId: bookId.trim() },
+      updateData,
       { new: true, runValidators: true }
     );
 
